@@ -49,7 +49,7 @@ type Identity struct {
 	Gjm         *string   `json:"gjm,omitempty"`
 }
 
-// GetProfile gets the profile of the user.
+// Get gets the profile of the user.
 func (s *ProfileService) Get(ctx context.Context) (*Profile, error) {
 	req, err := s.client.NewRequest(http.MethodGet, "me/profile")
 	resp, err := s.client.Do(req)
