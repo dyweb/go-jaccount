@@ -31,7 +31,7 @@ oauthClient := config.Client(oauth2.NoContext, token)
 client = jaccount.NewClient(oauthClient)
 
 // Get the profile of the user
-profile, err := client.GetProfile(context.Background())
+profile, err := client.Profile.Get(context.Background())
 ```
 
 ## References
