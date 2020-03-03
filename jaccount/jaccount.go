@@ -25,6 +25,14 @@ type Client struct {
 	client *http.Client
 
 	BaseURL *url.URL
+
+	common service
+
+	Profile *ProfileService
+}
+
+type service struct {
+	client *Client
 }
 
 // NewClient returns a new jAccount API client.
@@ -34,7 +42,10 @@ func NewClient(httpClient *http.Client) *Client {
 	}
 
 	baseURL, _ := url.Parse(defaultBaseURL)
+
 	c := &Client{client: httpClient, BaseURL: baseURL}
+	c.common.client = c
+	c.Profile = (*ProfileService)(&c.common)
 
 	return c
 }

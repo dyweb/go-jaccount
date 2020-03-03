@@ -36,7 +36,7 @@ func main() {
 	})
 
 	http.HandleFunc("/profile", func(w http.ResponseWriter, r *http.Request) {
-		profile, _ := client.GetProfile(context.Background())
+		profile, _ := client.Profile.Get(context.Background())
 		data, _ := json.Marshal(profile)
 		w.Write(data)
 	})

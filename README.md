@@ -1,6 +1,9 @@
 # Go Client for jAccount
 
-A Go Client for jAccount.
+[![GoDoc](https://img.shields.io/static/v1?label=godoc&message=reference&color=blue)](https://pkg.go.dev/github.com/dyweb/go-jaccount)
+[![License](https://img.shields.io/github/license/dyweb/go-jaccount)](https://github.com/dyweb/go-jaccount/blob/master/LICENSE)
+
+go-jaccount is a Go Client for jAccount API.
 
 ## Installation
 
@@ -30,6 +33,10 @@ client = jaccount.NewClient(oauthClient)
 // Get the profile of the user
 profile, err := client.GetProfile(context.Background())
 ```
+
+## References
+
+- [google/go-github](https://github.com/google/go-github)
 
 ## License
 
