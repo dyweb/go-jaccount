@@ -1,5 +1,6 @@
 # Go Client for jAccount
 
+[![Build Status](https://github.com/dyweb/go-jaccount/workflows/Go/badge.svg)](https://github.com/dyweb/go-jaccount/actions)
 [![GoDoc](https://img.shields.io/static/v1?label=godoc&message=reference&color=blue)](https://pkg.go.dev/github.com/dyweb/go-jaccount)
 [![License](https://img.shields.io/github/license/dyweb/go-jaccount)](https://github.com/dyweb/go-jaccount/blob/master/LICENSE)
 
