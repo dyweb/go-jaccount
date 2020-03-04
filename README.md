@@ -25,10 +25,10 @@ var config = &oauth2.Config{
 
 var client *jaccount.Client
 
-oauthClient := config.Client(oauth2.NoContext, token)
+c := config.Client(oauth2.NoContext, token)
 
 // jAccount API client
-client = jaccount.NewClient(oauthClient)
+client = jaccount.NewClient(c)
 
 // Get the profile of the user
 profile, err := client.Profile.Get(context.Background())

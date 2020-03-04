@@ -29,9 +29,9 @@ func main() {
 	http.HandleFunc("/callback", func(w http.ResponseWriter, r *http.Request) {
 		code := r.URL.Query()["code"][0]
 		token, _ := config.Exchange(r.Context(), code)
-		oauthClient := config.Client(oauth2.NoContext, token)
+		c := config.Client(oauth2.NoContext, token)
 
-		client = jaccount.NewClient(oauthClient)
+		client = jaccount.NewClient(c)
 		http.Redirect(w, r, "/profile", http.StatusTemporaryRedirect)
 	})
 
