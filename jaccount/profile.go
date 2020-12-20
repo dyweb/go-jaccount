@@ -23,8 +23,8 @@ type Profile struct {
 	Organize   *Organize   `json:"organize,omitempty"`
 	ClassNO    *string     `json:"classNo,omitempty"`
 	Birthday   *Birthday   `json:"birthday,omitempty"`
-	Gender     string      `json:"gender,omitempty"`
-	Email      string      `json:"email,omitempty"`
+	Gender     *string      `json:"gender,omitempty"`
+	Email      *string      `json:"email,omitempty"`
 	TimeZone   *int        `json:"timeZone,omitempty"`
 	Identities []*Identity `json:"identities,omitempty"`
 	CardNO     *string     `json:"cardNo,omitempty"`
