@@ -25,6 +25,15 @@ func TestProfileService_Get(t *testing.T) {
 		ClassNO:  String("B0000000"),
 		TimeZone: Int(0),
 		UnionID:  String("union_id"),
+		Birthday:   &Birthday{
+			BirthYear:  String("1970"),
+			BirthMonth: String("01"),
+			BirthDay:   String("01"),
+		},
+		Gender:     String("male"),
+		Email:      String("example@example.com"),
+		CardNO:     String("31010119700101000X"),
+		CardType:   String("01"),
 	}
 	profiles := [1]*Profile{profile}
 	rawProfiles, err := json.Marshal(profiles)
