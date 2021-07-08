@@ -2,8 +2,6 @@ package jaccount
 
 import (
 	"context"
-	"encoding/json"
-	"io/ioutil"
 	"net/http"
 )
 
@@ -23,8 +21,8 @@ type Profile struct {
 	Organize   *Organize   `json:"organize,omitempty"`
 	ClassNO    *string     `json:"classNo,omitempty"`
 	Birthday   *Birthday   `json:"birthday,omitempty"`
-	Gender     *string      `json:"gender,omitempty"`
-	Email      *string      `json:"email,omitempty"`
+	Gender     *string     `json:"gender,omitempty"`
+	Email      *string     `json:"email,omitempty"`
 	TimeZone   *int        `json:"timeZone,omitempty"`
 	Identities []*Identity `json:"identities,omitempty"`
 	CardNO     *string     `json:"cardNo,omitempty"`
@@ -73,22 +71,13 @@ type Major struct {
 
 // Get gets the profile of the user.
 func (s *ProfileService) Get(ctx context.Context) (*Profile, error) {
-	req, err := s.client.NewRequest(http.MethodGet, "me/profile")
-	resp, err := s.client.Do(req)
-
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return nil, err
-	}
-
-	response := new(Response)
-	err = json.Unmarshal(body, &response)
+	req, err := s.client.NewRequest(http.MethodGet, "/me/profile")
 	if err != nil {
 		return nil, err
 	}
 
 	profile := make([]Profile, 1)
-	err = json.Unmarshal(response.Entities, &profile)
+	_, err = s.client.Do(req, &profile)
 	if err != nil {
 		return nil, err
 	}
