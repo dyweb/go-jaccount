@@ -1,3 +1,19 @@
+/*
+Copyright 2021 The Go jAccount Authors.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
+
 package jaccount
 
 import (
@@ -25,15 +41,15 @@ func TestProfileService_Get(t *testing.T) {
 		ClassNO:  String("B0000000"),
 		TimeZone: Int(0),
 		UnionID:  String("union_id"),
-		Birthday:   &Birthday{
+		Birthday: &Birthday{
 			BirthYear:  String("1970"),
 			BirthMonth: String("01"),
 			BirthDay:   String("01"),
 		},
-		Gender:     String("male"),
-		Email:      String("example@example.com"),
-		CardNO:     String("31010119700101000X"),
-		CardType:   String("01"),
+		Gender:   String("male"),
+		Email:    String("example@example.com"),
+		CardNO:   String("31010119700101000X"),
+		CardType: String("01"),
 	}
 	profiles := [1]*Profile{profile}
 	rawProfiles, err := json.Marshal(profiles)

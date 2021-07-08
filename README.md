@@ -41,4 +41,4 @@ profile, err := client.Profile.Get(context.Background())
 
 ## License
 
-MIT
+Apache 2.0
