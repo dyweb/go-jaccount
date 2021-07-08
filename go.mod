@@ -1,5 +1,5 @@
 module github.com/dyweb/go-jaccount
 
-go 1.13
+go 1.16
 
-require golang.org/x/oauth2 v0.0.0-20200107190931-bf48bf16ab8d
+require golang.org/x/oauth2 v0.0.0-20210628180205-a41e5a781914
