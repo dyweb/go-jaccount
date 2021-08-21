@@ -17,8 +17,8 @@ limitations under the License.
 package main
 
 import (
-	"context"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"os"
 
@@ -33,17 +33,17 @@ func main() {
 		ClientSecret: os.Getenv("secretkey"),
 		Endpoint:     jaccount.Endpoint,
 		RedirectURL:  "http://localhost:8000/callback",
-		Scopes:       []string{"essential"},
+		Scopes:       []string{"openid"},
 	}
-
-	var client *jaccount.Client
 
 	http.HandleFunc("/login", func(w http.ResponseWriter, r *http.Request) {
 		state := util.RandString(16)
+		nonce := util.RandString(16)
 
 		util.SetCallbackCookie(w, r, "state", state)
+		util.SetCallbackCookie(w, r, "nonce", nonce)
 
-		url := config.AuthCodeURL(state)
+		url := config.AuthCodeURL(state, oauth2.SetAuthURLParam("nonce", nonce))
 		http.Redirect(w, r, url, http.StatusTemporaryRedirect)
 	})
 
@@ -64,21 +64,32 @@ func main() {
 			http.Error(w, "failed to exchange token", http.StatusInternalServerError)
 		}
 
-		c := config.Client(context.Background(), oauth2Token)
-
-		client = jaccount.NewClient(c)
-		http.Redirect(w, r, "/profile", http.StatusTemporaryRedirect)
-	})
-
-	http.HandleFunc("/profile", func(w http.ResponseWriter, r *http.Request) {
-		profile, err := client.Profile.Get(context.Background())
-		if err != nil {
-			http.Error(w, "failed to fetch profile", http.StatusInternalServerError)
+		rawIDToken, ok := oauth2Token.Extra("id_token").(string)
+		if !ok {
+			http.Error(w, "failed to get ID token in OAuth2 token", http.StatusInternalServerError)
+			return
 		}
 
-		data, err := json.Marshal(profile)
+		idToken, err := jaccount.VerifyToken(rawIDToken)
 		if err != nil {
-			http.Error(w, "failed to marshal profile", http.StatusInternalServerError)
+			http.Error(w, fmt.Sprintf("failed to verify ID Token: %s", err), http.StatusBadRequest)
+			return
+		}
+
+		nonce, err := r.Cookie("nonce")
+		if err != nil {
+			http.Error(w, "nonce not found", http.StatusBadRequest)
+			return
+		}
+		if idToken.Nonce != nonce.Value {
+			http.Error(w, "nonce mismatch", http.StatusBadRequest)
+			return
+		}
+
+		data, err := json.MarshalIndent(idToken, "", "    ")
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
 		}
 		w.Write(data)
 	})

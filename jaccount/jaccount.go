@@ -17,24 +17,15 @@ limitations under the License.
 package jaccount
 
 import (
+	"context"
 	"encoding/json"
 	"io/ioutil"
 	"net/http"
 	"net/url"
-
-	"golang.org/x/oauth2"
 )
 
-// Endpoint is jAccount's OAuth 2.0 endpoint.
-//
-// See http://developer.sjtu.edu.cn
-var Endpoint = oauth2.Endpoint{
-	AuthURL:  "https://jaccount.sjtu.edu.cn/oauth2/authorize",
-	TokenURL: "https://jaccount.sjtu.edu.cn/oauth2/token",
-}
-
 const (
-	defaultBaseURL = "https://api.sjtu.edu.cn/v1"
+	defaultBaseURL = "https://api.sjtu.edu.cn"
 )
 
 // Client manages communication with the jAccount API.
@@ -45,7 +36,8 @@ type Client struct {
 
 	common service
 
-	Profile *ProfileService
+	Profile    *ProfileService
+	Enterprise *EnterpriseService
 }
 
 type service struct {
@@ -62,7 +54,9 @@ func NewClient(httpClient *http.Client) *Client {
 
 	c := &Client{client: httpClient, BaseURL: baseURL}
 	c.common.client = c
+
 	c.Profile = (*ProfileService)(&c.common)
+	c.Enterprise = (*EnterpriseService)(&c.common)
 
 	return c
 }
@@ -91,11 +85,12 @@ type Response struct {
 }
 
 // Do sends an API request and returns the API response.
-func (c *Client) Do(req *http.Request, v interface{}) (*http.Response, error) {
-	resp, err := c.client.Do(req)
+func (c *Client) Do(ctx context.Context, req *http.Request, v interface{}) (*http.Response, error) {
+	resp, err := c.client.Do(req.WithContext(ctx))
 	if err != nil {
 		return nil, err
 	}
+	defer resp.Body.Close()
 
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {

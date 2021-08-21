@@ -23,7 +23,7 @@ import (
 
 // ProfileService handles communications with the profile data related methods of the jAccount API.
 //
-// See http://developer.sjtu.edu.cn/wiki/APIs#Profile for more information.
+// See https://developer.sjtu.edu.cn/api/profile.html for more information.
 type ProfileService service
 
 // Profile represents the profile of the user.
@@ -87,13 +87,13 @@ type Major struct {
 
 // Get gets the profile of the user.
 func (s *ProfileService) Get(ctx context.Context) (*Profile, error) {
-	req, err := s.client.NewRequest(http.MethodGet, "/me/profile")
+	req, err := s.client.NewRequest(http.MethodGet, "/v1/me/profile")
 	if err != nil {
 		return nil, err
 	}
 
 	profile := make([]Profile, 1)
-	_, err = s.client.Do(req, &profile)
+	_, err = s.client.Do(ctx, req, &profile)
 	if err != nil {
 		return nil, err
 	}
