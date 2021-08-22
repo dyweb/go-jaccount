@@ -27,10 +27,15 @@ import (
 	"golang.org/x/oauth2"
 )
 
+var (
+	ClientID     = os.Getenv("CLIENT_ID")
+	ClientSecret = os.Getenv("CLIENT_SECRET")
+)
+
 func main() {
 	var config = &oauth2.Config{
-		ClientID:     os.Getenv("clientid"),
-		ClientSecret: os.Getenv("secretkey"),
+		ClientID:     ClientID,
+		ClientSecret: ClientSecret,
 		Endpoint:     jaccount.Endpoint,
 		RedirectURL:  "http://localhost:8000/callback",
 		Scopes:       []string{"openid"},
@@ -62,6 +67,7 @@ func main() {
 		oauth2Token, err := config.Exchange(r.Context(), code)
 		if err != nil {
 			http.Error(w, "failed to exchange token", http.StatusInternalServerError)
+			return
 		}
 
 		rawIDToken, ok := oauth2Token.Extra("id_token").(string)

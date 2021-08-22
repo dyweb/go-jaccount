@@ -19,6 +19,7 @@ package jaccount
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"net/url"
@@ -78,10 +79,11 @@ func (c *Client) NewRequest(method string, path string) (*http.Request, error) {
 
 // Response is a jAccount API response.
 type Response struct {
-	ErrNO    int             `json:"errno,omitempty"`
-	Error    string          `json:"error,omitempty"`
-	Total    int             `json:"total,omitempty"`
-	Entities json.RawMessage `json:"entities,omitempty"`
+	ErrNO     int             `json:"errno,omitempty"`
+	Error     string          `json:"error,omitempty"`
+	Total     int             `json:"total,omitempty"`
+	NextToken string          `json:"nextToken,omitempty"`
+	Entities  json.RawMessage `json:"entities,omitempty"`
 }
 
 // Do sends an API request and returns the API response.
@@ -104,10 +106,39 @@ func (c *Client) Do(ctx context.Context, req *http.Request, v interface{}) (*htt
 		return nil, err
 	}
 
+	if resp.StatusCode != http.StatusOK || response.ErrNO != 0 {
+		errResp := &ErrorResponse{Response: resp}
+		err = json.Unmarshal(body, &errResp)
+		if err != nil {
+			return nil, err
+		}
+
+		return nil, errResp
+	}
+
 	err = json.Unmarshal(response.Entities, v)
 	if err != nil {
 		return resp, err
 	}
 
 	return resp, nil
+}
+
+// ErrorResponse reports one or more errors caused by an API request.
+type ErrorResponse struct {
+	Response *http.Response
+
+	ErrNO         int    `json:"errno,omitempty"`
+	InternalError string `json:"error,omitempty"`
+	Total         int    `json:"total,omitempty"`
+}
+
+func (r *ErrorResponse) Error() string {
+	return fmt.Sprintf(
+		"%v %v: %d %v",
+		r.Response.Request.Method,
+		r.Response.Request.URL,
+		r.Response.StatusCode,
+		r.InternalError,
+	)
 }

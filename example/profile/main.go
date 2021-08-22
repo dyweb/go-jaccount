@@ -19,6 +19,7 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"os"
 
@@ -62,6 +63,7 @@ func main() {
 		oauth2Token, err := config.Exchange(r.Context(), code)
 		if err != nil {
 			http.Error(w, "failed to exchange token", http.StatusInternalServerError)
+			return
 		}
 
 		c := config.Client(context.Background(), oauth2Token)
@@ -73,12 +75,14 @@ func main() {
 	http.HandleFunc("/profile", func(w http.ResponseWriter, r *http.Request) {
 		profile, err := client.Profile.Get(context.Background())
 		if err != nil {
-			http.Error(w, "failed to fetch profile", http.StatusInternalServerError)
+			http.Error(w, fmt.Sprintf("failed to fetch profile: %s", err), http.StatusInternalServerError)
+			return
 		}
 
 		data, err := json.Marshal(profile)
 		if err != nil {
 			http.Error(w, "failed to marshal profile", http.StatusInternalServerError)
+			return
 		}
 		w.Write(data)
 	})
