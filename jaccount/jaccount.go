@@ -78,15 +78,16 @@ func (c *Client) NewRequest(method string, path string) (*http.Request, error) {
 
 // Response is a jAccount API response.
 type Response struct {
-	ErrNO    *int            `json:"errno,omitempty"`
-	Error    *string         `json:"error,omitempty"`
-	Total    *int            `json:"total,omitempty"`
+	ErrNO    int             `json:"errno,omitempty"`
+	Error    string          `json:"error,omitempty"`
+	Total    int             `json:"total,omitempty"`
 	Entities json.RawMessage `json:"entities,omitempty"`
 }
 
 // Do sends an API request and returns the API response.
 func (c *Client) Do(ctx context.Context, req *http.Request, v interface{}) (*http.Response, error) {
-	resp, err := c.client.Do(req.WithContext(ctx))
+	req = req.WithContext(ctx)
+	resp, err := c.client.Do(req)
 	if err != nil {
 		return nil, err
 	}
@@ -105,15 +106,8 @@ func (c *Client) Do(ctx context.Context, req *http.Request, v interface{}) (*htt
 
 	err = json.Unmarshal(response.Entities, v)
 	if err != nil {
-		return nil, err
+		return resp, err
 	}
 
 	return resp, nil
-}
-
-// ErrorResponse reports one or more errors caused by an API request.
-type ErrorResponse struct {
-	ErrNO *int    `json:"errno,omitempty"`
-	Error *string `json:"error,omitempty"`
-	Total *int    `json:"total,omitempty"`
 }

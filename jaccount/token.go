@@ -32,7 +32,7 @@ var Endpoint = oauth2.Endpoint{
 	TokenURL: "https://jaccount.sjtu.edu.cn/oauth2/token",
 }
 
-const Issuer = "https://jaccount.sjtu.edu.cn/oauth2/"
+const issuer = "https://jaccount.sjtu.edu.cn/oauth2/"
 
 type idToken struct {
 	// The URL of the server which issued this token.
@@ -85,8 +85,8 @@ func VerifyToken(rawToken string) (*IDToken, error) {
 		Type:     Type(idToken.Type),
 	}
 
-	if t.Issuer != Issuer {
-		return nil, fmt.Errorf("ID token issued by a different provider, expected %q got %q", Issuer, t.Issuer)
+	if t.Issuer != issuer {
+		return nil, fmt.Errorf("ID token issued by a different provider, expected %q got %q", issuer, t.Issuer)
 	}
 
 	now := time.Now()

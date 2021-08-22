@@ -28,28 +28,28 @@ import (
 
 func TestProfileService_Get(t *testing.T) {
 	profile := &Profile{
-		ID:       String("00000000-0000-0000-0000-000000000000"),
-		Account:  String("test"),
-		Name:     String("test"),
-		Kind:     String("canvas.profile"),
-		Code:     String("000000000000"),
-		UserType: String("student"),
+		ID:       "00000000-0000-0000-0000-000000000000",
+		Account:  "test",
+		Name:     "test",
+		Kind:     "canvas.profile",
+		Code:     "000000000000",
+		UserType: "student",
 		Organize: &Organize{
-			Name: String("软件学院"),
-			ID:   String("03700"),
+			Name: "软件学院",
+			ID:   "03700",
 		},
-		ClassNO:  String("B0000000"),
-		TimeZone: Int(0),
-		UnionID:  String("union_id"),
+		ClassNO:  "B0000000",
+		TimeZone: 0,
+		UnionID:  "union_id",
 		Birthday: &Birthday{
-			BirthYear:  String("1970"),
-			BirthMonth: String("01"),
-			BirthDay:   String("01"),
+			BirthYear:  "1970",
+			BirthMonth: "01",
+			BirthDay:   "01",
 		},
-		Gender:   String("male"),
-		Email:    String("example@example.com"),
-		CardNO:   String("31010119700101000X"),
-		CardType: String("01"),
+		Gender:   "male",
+		Email:    "example@example.com",
+		CardNO:   "31010119700101000X",
+		CardType: "01",
 	}
 	profiles := [1]*Profile{profile}
 	rawProfiles, err := json.Marshal(profiles)
@@ -58,9 +58,9 @@ func TestProfileService_Get(t *testing.T) {
 	}
 
 	response := &Response{
-		ErrNO:    Int(0),
-		Error:    String("success"),
-		Total:    Int(0),
+		ErrNO:    0,
+		Error:    "success",
+		Total:    0,
 		Entities: rawProfiles,
 	}
 	rawResponse, err := json.Marshal(response)
