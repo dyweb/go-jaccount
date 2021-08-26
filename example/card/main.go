@@ -39,7 +39,7 @@ func main() {
 		ClientSecret: ClientSecret,
 		Endpoint:     jaccount.Endpoint,
 		RedirectURL:  "http://localhost:8000/callback",
-		Scopes:       []string{jaccount.ScopeEssential},
+		Scopes:       []string{jaccount.ScopeCardInfo, jaccount.ScopeCardTransactions},
 	}
 
 	var client *jaccount.Client
@@ -74,19 +74,34 @@ func main() {
 		c := config.Client(context.Background(), oauth2Token)
 
 		client = jaccount.NewClient(c)
-		http.Redirect(w, r, "/profile", http.StatusTemporaryRedirect)
+		http.Redirect(w, r, "/card/transactions", http.StatusTemporaryRedirect)
 	})
 
-	http.HandleFunc("/profile", func(w http.ResponseWriter, r *http.Request) {
-		profile, err := client.Profile.Get(context.Background())
+	http.HandleFunc("/card/info", func(w http.ResponseWriter, r *http.Request) {
+		cardInfo, err := client.Card.GetCardInfo(context.Background())
 		if err != nil {
-			http.Error(w, fmt.Sprintf("failed to fetch profile: %s", err), http.StatusInternalServerError)
+			http.Error(w, fmt.Sprintf("failed to fetch card information: %s", err), http.StatusInternalServerError)
 			return
 		}
 
-		data, err := json.Marshal(profile)
+		data, err := json.Marshal(cardInfo)
 		if err != nil {
-			http.Error(w, "failed to marshal profile", http.StatusInternalServerError)
+			http.Error(w, "failed to marshal card information", http.StatusInternalServerError)
+			return
+		}
+		w.Write(data)
+	})
+
+	http.HandleFunc("/card/transactions", func(w http.ResponseWriter, r *http.Request) {
+		cardInfo, err := client.Card.ListTransactions(context.Background(), &jaccount.CardListTransactionsOptions{BeginDate: 1619881405000})
+		if err != nil {
+			http.Error(w, fmt.Sprintf("failed to fetch card transactions: %s", err), http.StatusInternalServerError)
+			return
+		}
+
+		data, err := json.Marshal(cardInfo)
+		if err != nil {
+			http.Error(w, "failed to marshal card transactions", http.StatusInternalServerError)
 			return
 		}
 		w.Write(data)

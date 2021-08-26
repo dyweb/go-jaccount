@@ -38,6 +38,7 @@ type Client struct {
 	common service
 
 	Profile    *ProfileService
+	Card       *CardService
 	Enterprise *EnterpriseService
 }
 
@@ -57,13 +58,14 @@ func NewClient(httpClient *http.Client) *Client {
 	c.common.client = c
 
 	c.Profile = (*ProfileService)(&c.common)
+	c.Card = (*CardService)(&c.common)
 	c.Enterprise = (*EnterpriseService)(&c.common)
 
 	return c
 }
 
 // NewRequest creates an API request.
-func (c *Client) NewRequest(method string, path string) (*http.Request, error) {
+func (c *Client) NewRequest(method string, path string, queries url.Values) (*http.Request, error) {
 	url, err := c.BaseURL.Parse(path)
 	if err != nil {
 		return nil, err
@@ -72,6 +74,10 @@ func (c *Client) NewRequest(method string, path string) (*http.Request, error) {
 	req, err := http.NewRequest(method, url.String(), nil)
 	if err != nil {
 		return nil, err
+	}
+
+	if queries != nil {
+		req.URL.RawQuery = queries.Encode()
 	}
 
 	return req, nil

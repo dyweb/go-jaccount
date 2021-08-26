@@ -27,7 +27,7 @@ import (
 type EnterpriseService service
 
 func (s *EnterpriseService) GetUserPositions(ctx context.Context) (*Positions, error) {
-	req, err := s.client.NewRequest(http.MethodGet, "/v1/enterprise/user/positions")
+	req, err := s.client.NewRequest(http.MethodGet, "/v1/enterprise/user/positions", nil)
 	if err != nil {
 		return nil, err
 	}

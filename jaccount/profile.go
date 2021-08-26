@@ -87,7 +87,7 @@ type Major struct {
 
 // Get gets the profile of the user.
 func (s *ProfileService) Get(ctx context.Context) (*Profile, error) {
-	req, err := s.client.NewRequest(http.MethodGet, "/v1/me/profile")
+	req, err := s.client.NewRequest(http.MethodGet, "/v1/me/profile", nil)
 	if err != nil {
 		return nil, err
 	}
