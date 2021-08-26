@@ -32,7 +32,51 @@ var Endpoint = oauth2.Endpoint{
 	TokenURL: "https://jaccount.sjtu.edu.cn/oauth2/token",
 }
 
-const issuer = "https://jaccount.sjtu.edu.cn/oauth2/"
+const (
+	Issuer    = "https://jaccount.sjtu.edu.cn/oauth2/"
+	LogoutURL = "https://jaccount.sjtu.edu.cn/oauth2/logout"
+)
+
+const (
+	// ScopeOpenID is the mandatory scope for all OpenID Connect OAuth2 requests.
+	ScopeOpenID = "openid"
+
+	// Read Scope
+	ScopeBasic         = "basic"
+	ScopeEssential     = "essential"
+	ScopeProfile       = "profile"
+	ScopeTasks         = "tasks"
+	ScopeNotifications = "notifications"
+	ScopePrivacy       = "privacy"
+	ScopeIntrospect    = "introspect"
+	ScopeReadApps      = "read_apps"
+	ScopeWriteApps     = "write_apps"
+	ScopeExchangeData  = "exchange_data"
+
+	// Write Scope
+	ScopeSendNotification   = "send_notification"
+	ScopeReadMails          = "read_mails"
+	ScopeSendMail           = "send_mail"
+	ScopeStorage            = "storage"
+	ScopeModifyNotification = "modify_notification"
+	ScopeLessons            = "lessons"
+	ScopeClasses            = "classes"
+	ScopeExams              = "exams"
+	ScopeScores             = "scores"
+	ScopeStudentList        = "student_list"
+	ScopeCardInfo           = "card_info"
+	ScopeCardTransactions   = "card_transactions"
+	ScopeWriteCardInfo      = "write_card_info"
+	ScopeIncome             = "income"
+	ScopeCreateJAccount     = "create_jaccount"
+	ScopeEditJAccount       = "edit_jaccount"
+	ScopeNetServiceInfo     = "net_service_info"
+	ScopeConnectWechat      = "connect_wechat"
+	ScopeConnectShmec       = "connect_shmec"
+	ScopePrint              = "print"
+	ScopeConnectFinance     = "connect_finance"
+	ScopeStudentAffairs     = "student_affairs"
+)
 
 type idToken struct {
 	// The URL of the server which issued this token.
@@ -85,8 +129,8 @@ func VerifyToken(rawToken string) (*IDToken, error) {
 		Type:     Type(idToken.Type),
 	}
 
-	if t.Issuer != issuer {
-		return nil, fmt.Errorf("ID token issued by a different provider, expected %q got %q", issuer, t.Issuer)
+	if t.Issuer != Issuer {
+		return nil, fmt.Errorf("ID token issued by a different provider, expected %q got %q", Issuer, t.Issuer)
 	}
 
 	now := time.Now()

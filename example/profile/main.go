@@ -34,7 +34,7 @@ func main() {
 		ClientSecret: os.Getenv("secretkey"),
 		Endpoint:     jaccount.Endpoint,
 		RedirectURL:  "http://localhost:8000/callback",
-		Scopes:       []string{"essential"},
+		Scopes:       []string{jaccount.ScopeEssential},
 	}
 
 	var client *jaccount.Client

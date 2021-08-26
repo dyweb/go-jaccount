@@ -38,7 +38,7 @@ func main() {
 		ClientSecret: ClientSecret,
 		Endpoint:     jaccount.Endpoint,
 		RedirectURL:  "http://localhost:8000/callback",
-		Scopes:       []string{"openid"},
+		Scopes:       []string{jaccount.ScopeOpenID},
 	}
 
 	http.HandleFunc("/login", func(w http.ResponseWriter, r *http.Request) {
