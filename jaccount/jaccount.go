@@ -27,6 +27,7 @@ import (
 
 const (
 	defaultBaseURL = "https://api.sjtu.edu.cn"
+	userAgent      = "go-jaccount"
 )
 
 // Client manages communication with the jAccount API.
@@ -34,6 +35,8 @@ type Client struct {
 	client *http.Client
 
 	BaseURL *url.URL
+
+	UserAgent string
 
 	common service
 
@@ -54,7 +57,11 @@ func NewClient(httpClient *http.Client) *Client {
 
 	baseURL, _ := url.Parse(defaultBaseURL)
 
-	c := &Client{client: httpClient, BaseURL: baseURL}
+	c := &Client{
+		client:    httpClient,
+		BaseURL:   baseURL,
+		UserAgent: userAgent,
+	}
 	c.common.client = c
 
 	c.Profile = (*ProfileService)(&c.common)
@@ -78,6 +85,10 @@ func (c *Client) NewRequest(method string, path string, queries url.Values) (*ht
 
 	if queries != nil {
 		req.URL.RawQuery = queries.Encode()
+	}
+
+	if c.UserAgent != "" {
+		req.Header.Set("User-Agent", c.UserAgent)
 	}
 
 	return req, nil

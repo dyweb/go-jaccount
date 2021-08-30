@@ -18,8 +18,10 @@ package main
 
 import (
 	"context"
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"os"
 
@@ -45,9 +47,9 @@ func main() {
 	var client *jaccount.Client
 
 	http.HandleFunc("/login", func(w http.ResponseWriter, r *http.Request) {
-		state := util.RandString(16)
+		state := base64.RawStdEncoding.EncodeToString(util.RandBytes(16))
 
-		util.SetCallbackCookie(w, r, "state", state)
+		util.SetCookie(w, r, "state", state)
 
 		url := config.AuthCodeURL(state)
 		http.Redirect(w, r, url, http.StatusTemporaryRedirect)
@@ -59,6 +61,8 @@ func main() {
 			http.Error(w, "state not found", http.StatusBadRequest)
 			return
 		}
+
+		util.DeleteCookie(w, r, "state")
 		if r.URL.Query().Get("state") != state.Value {
 			http.Error(w, "state mismatch", http.StatusBadRequest)
 			return
@@ -92,5 +96,36 @@ func main() {
 		w.Write(data)
 	})
 
+	http.HandleFunc("/card/info", func(w http.ResponseWriter, r *http.Request) {
+		cardInfo, err := client.Card.GetCardInfo(context.Background())
+		if err != nil {
+			http.Error(w, fmt.Sprintf("failed to fetch card information: %s", err), http.StatusInternalServerError)
+			return
+		}
+
+		data, err := json.Marshal(cardInfo)
+		if err != nil {
+			http.Error(w, "failed to marshal card information", http.StatusInternalServerError)
+			return
+		}
+		w.Write(data)
+	})
+
+	http.HandleFunc("/card/transactions", func(w http.ResponseWriter, r *http.Request) {
+		cardInfo, err := client.Card.ListTransactions(context.Background(), &jaccount.CardListTransactionsOptions{BeginDate: 1619881405000})
+		if err != nil {
+			http.Error(w, fmt.Sprintf("failed to fetch card transactions: %s", err), http.StatusInternalServerError)
+			return
+		}
+
+		data, err := json.Marshal(cardInfo)
+		if err != nil {
+			http.Error(w, "failed to marshal card transactions", http.StatusInternalServerError)
+			return
+		}
+		w.Write(data)
+	})
+
+	log.Println("listening on :8000")
 	http.ListenAndServe(":8000", nil)
 }

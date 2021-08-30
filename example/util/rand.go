@@ -1,9 +1,23 @@
+/*
+Copyright 2021 The Go jAccount Authors.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
+
 package util
 
 import (
-	"encoding/base64"
 	"math/rand"
-	"net/http"
 	"time"
 )
 
@@ -20,6 +34,11 @@ var src = rand.NewSource(time.Now().UnixNano())
 //
 // Reference: https://stackoverflow.com/a/31832326/124898
 func RandString(n int) string {
+	return string(RandBytes(n))
+}
+
+// RandBytes generates a random byte slice of the given length.
+func RandBytes(n int) []byte {
 	b := make([]byte, n)
 	for i, cache, remain := n-1, src.Int63(), letterIdxMax; i >= 0; {
 		if remain == 0 {
@@ -33,17 +52,5 @@ func RandString(n int) string {
 		remain--
 	}
 
-	return base64.RawStdEncoding.EncodeToString(b)
-}
-
-// SetCallbackCookie sets a callback cookie.
-func SetCallbackCookie(w http.ResponseWriter, r *http.Request, name, value string) {
-	c := &http.Cookie{
-		Name:     name,
-		Value:    value,
-		MaxAge:   int(time.Hour.Seconds()),
-		Secure:   r.TLS != nil,
-		HttpOnly: true,
-	}
-	http.SetCookie(w, c)
+	return b
 }

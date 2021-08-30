@@ -17,8 +17,10 @@ limitations under the License.
 package main
 
 import (
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"os"
 
@@ -42,11 +44,11 @@ func main() {
 	}
 
 	http.HandleFunc("/login", func(w http.ResponseWriter, r *http.Request) {
-		state := util.RandString(16)
-		nonce := util.RandString(16)
+		state := base64.RawStdEncoding.EncodeToString(util.RandBytes(16))
+		nonce := base64.RawStdEncoding.EncodeToString(util.RandBytes(16))
 
-		util.SetCallbackCookie(w, r, "state", state)
-		util.SetCallbackCookie(w, r, "nonce", nonce)
+		util.SetCookie(w, r, "state", state)
+		util.SetCookie(w, r, "nonce", nonce)
 
 		url := config.AuthCodeURL(state, oauth2.SetAuthURLParam("nonce", nonce))
 		http.Redirect(w, r, url, http.StatusTemporaryRedirect)
@@ -58,6 +60,8 @@ func main() {
 			http.Error(w, "state not found", http.StatusBadRequest)
 			return
 		}
+
+		util.DeleteCookie(w, r, "state")
 		if r.URL.Query().Get("state") != state.Value {
 			http.Error(w, "state mismatch", http.StatusBadRequest)
 			return
@@ -87,6 +91,8 @@ func main() {
 			http.Error(w, "nonce not found", http.StatusBadRequest)
 			return
 		}
+
+		util.DeleteCookie(w, r, "nonce")
 		if idToken.Nonce != nonce.Value {
 			http.Error(w, "nonce mismatch", http.StatusBadRequest)
 			return
@@ -100,5 +106,6 @@ func main() {
 		w.Write(data)
 	})
 
+	log.Println("listening on :8000")
 	http.ListenAndServe(":8000", nil)
 }
